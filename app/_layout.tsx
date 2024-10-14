@@ -1,16 +1,22 @@
+import SnackbarComponent from "@/components/SnackbarComponent";
+import { SnackbarProvider } from "@/context/SnackbarContext";
 import { Stack, useSegments } from "expo-router";
-import { View, Text } from "react-native";
+import { NativeWindStyleSheet } from "nativewind";
+import { SafeAreaView, StatusBar } from "react-native";
+import "./tailwind.css"; // Import Tailwind CSS styles
 
 export default function RootLayout() {
   const segments = useSegments();
   const currentRoute = segments.join("/");
+  NativeWindStyleSheet.setOutput({
+    default: "native",
+  });
 
-  // Define different layouts
   const AppLayout = (
     <Stack
       screenOptions={{
         headerStyle: {
-          backgroundColor: "#f4511e",
+          backgroundColor: "#F2F3FF",
         },
         headerTintColor: "#fff",
         headerTitleStyle: {
@@ -18,18 +24,30 @@ export default function RootLayout() {
         },
       }}
     >
-      <Stack.Screen name="(main)/dashboard/page" />
+      <Stack.Screen name="(main)/dashboard" />
     </Stack>
   );
 
   const AuthLayout = (
-    <Stack>
-      <Stack.Screen name="(auth)/sign-in/page" />
-      <Stack.Screen name="(auth)/sign-up/page" />
-      <Stack.Screen name="(auth)/reset-password/page" />
+    <Stack
+      screenOptions={{
+        title: "Auth",
+        headerShown: false,
+        headerStyle: { backgroundColor: "#eee" },
+      }}
+    >
+      <Stack.Screen name="(auth)" />
     </Stack>
   );
-
-  // Conditionally render layouts based on the current route
-  return currentRoute.includes("(auth)") ? AuthLayout : AppLayout;
+  return (
+    <SafeAreaView className="bg-background-50 flex-1">
+      <SnackbarProvider>
+        <>
+          <StatusBar barStyle="dark-content" />
+          {currentRoute.includes("(auth)") ? AuthLayout : AppLayout}
+          <SnackbarComponent />
+        </>
+      </SnackbarProvider>
+    </SafeAreaView>
+  );
 }

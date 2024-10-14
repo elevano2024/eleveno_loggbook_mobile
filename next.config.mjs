@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 import withPWAInit from "@ducanh2912/next-pwa";
+const { withExpo } = require("@expo/next-adapter");
 
 const withPWA = withPWAInit({
   dest: "public",
@@ -10,9 +11,6 @@ const withPWA = withPWAInit({
   disable: false,
   workboxOptions: {
     disableDevLogs: true,
-  },
-  customWorkerSrc: "worker",
-  workboxOptions: {
     runtimeCaching: [
       {
         urlPattern: /\//, // Cache all routes
@@ -20,16 +18,17 @@ const withPWA = withPWAInit({
       },
     ],
   },
+  customWorkerSrc: "worker",
 });
 
 const nextConfig = {
   env: {
-    HASURA_ENDPOINT_DEV: process.env.HASURA_ENDPOINT_DEV,
-    HASURA_ADMIN_SECRET_DEV: process.env.HASURA_ADMIN_SECRET_DEV,
-    HASURA_ENDPOINT_WS_DEV: process.env.HASURA_ENDPOINT_WS_DEV,
-    HASURA_ENDPOINT_WS_PROD: process.env.HASURA_ENDPOINT_WS_PROD,
-    HASURA_ENDPOINT_PROD: process.env.HASURA_ENDPOINT_PROD,
-    HASURA_ADMIN_SECRET_PROD: process.env.HASURA_ADMIN_SECRET_PROD,
+    HASURA_ENDPOINT_DEV: process.env.EXPO_PUBLIC_HASURA_ENDPOINT_DEV,
+    HASURA_ADMIN_SECRET_DEV: process.env.EXPO_PUBLIC_HASURA_ADMIN_SECRET_DEV,
+    HASURA_ENDPOINT_WS_DEV: process.env.EXPO_PUBLIC_HASURA_ENDPOINT_WS_DEV,
+    HASURA_ENDPOINT_WS_PROD: process.env.EXPO_PUBLIC_HASURA_ENDPOINT_WS_PROD,
+    HASURA_ENDPOINT_PROD: process.env.EXPO_PUBLIC_HASURA_ENDPOINT_PROD,
+    HASURA_ADMIN_SECRET_PROD: process.env.EXPO_PUBLIC_HASURA_ADMIN_SECRET_PROD,
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if
@@ -51,6 +50,17 @@ const nextConfig = {
       },
     ],
   },
+  reactStrictMode: true,
+  swcMinify: true,
+  transpilePackages: [
+    "react-native",
+    "react-native-web",
+    "expo",
+    // Add more React Native/Expo packages here...
+  ],
+  experimental: {
+    forceSwcTransforms: true,
+  },
 };
 
-export default withPWA(nextConfig);
+export default withExpo(withPWA(nextConfig));
